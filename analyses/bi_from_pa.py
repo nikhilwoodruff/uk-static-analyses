@@ -3,6 +3,7 @@ from openfisca_uk import CountryTaxBenefitSystem
 from openfisca_core.simulation_builder import SimulationBuilder
 from openfisca_uk.reforms.basic_income import bi_from_pa
 from utilities.simulation import model
+from utilities.visualisation import points_to_line
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
@@ -11,11 +12,12 @@ data = pd.read_csv('datasets/frs/frs.csv')
 period = '2020-01'
 baseline_model = model(period=period)
 reform_model = model(bi_from_pa, period=period)
-data['net_income'] = baseline_model.calculate('net_income', period)
-data['net_income_reformed'] = reform_model.calculate('net_income', period)
-sns.lineplot(data['earnings'] * 12, data['net_income'] * 12, ci=None)
-sns.lineplot(data['earnings'] * 12, data['net_income_reformed'] * 12, ci=None, color='red')
-plot = sns.lineplot(data['earnings'] * 12, data['net_income_reformed'] * 12 - data['net_income'] * 12, ci=None, color='grey')
+data['net_income'] = baseline_model.calculate('net_income', period) * 12
+data['net_income_reformed'] = reform_model.calculate('net_income', period) * 12
+data['earnings'] *= 12
+plot = sns.scatterplot(data['earnings'], data['net_income'], alpha=0.5, s=2, edgecolor='none')
+plot = sns.scatterplot(data['earnings'], data['net_income_reformed'], alpha=0.5, s=2, color='red', edgecolor='none')
+plot = sns.scatterplot(data['earnings'], data['net_income_reformed'] - data['net_income'], alpha=0.5, s=2, color='grey', edgecolor='none')
 plot.set(xlim=[0, 150000])
 plot.set(ylim=[0, 150000])
 plt.legend(labels=['baseline', 'reform', 'difference'])
