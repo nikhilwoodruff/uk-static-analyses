@@ -3,8 +3,10 @@ import seaborn as sns
 import pandas as pd
 import numpy as np
 
-def banded_lineplot(x, y, num_bins=1000, color='blue', bands=True, scatter=False):
-    lower, upper = x.min(), x.max()
+def banded_lineplot(x, y, num_bins=100, color='blue', bands=True, scatter=False, clip_percentiles=[1, 99]):
+    lower, upper = np.percentile(x, clip_percentiles[0]), np.percentile(x, clip_percentiles[1])
+    y = y[(x > lower) * (x < upper)]
+    x = x[(x > lower) * (x < upper)]
     bins = np.linspace(lower, upper, num=num_bins + 1)
     contents = np.array([y[np.logical_and(x < bins[i + 1], x >= bins[i])] for i in range(num_bins)])
     indices = [i for i in range(len(contents)) if len(contents[i]) > 0]

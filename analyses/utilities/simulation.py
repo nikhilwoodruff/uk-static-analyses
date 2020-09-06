@@ -1,4 +1,4 @@
-import pandas
+import pandas as pd
 from openfisca_uk import CountryTaxBenefitSystem
 from openfisca_core.simulation_builder import SimulationBuilder
 from openfisca_core.model_api import *
@@ -6,8 +6,9 @@ from openfisca_uk.entities import *
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
+import os
 
-def model(*reforms, data=None, period='2020-01'):
+def model(*reforms, data_dir=None, period='2020-01'):
     '''
     Create and populate a tax-benefit simulation model from OpenFisca.
 
@@ -24,14 +25,19 @@ def model(*reforms, data=None, period='2020-01'):
         system = reform(system) # apply each reform in order
     builder = SimulationBuilder()
     builder.create_entities(system) # create the entities (person, family, etc.)
-    if data is None:
-        data = pandas.read_csv('datasets/frs/frs.csv')
-    builder.declare_person_entity('person', np.array(data['person_id'])) # assign ids
-    households = builder.declare_entity('household', np.unique(np.array(data['household_id'])))
-    families = builder.declare_entity('family', np.unique(np.array(data['family_id'])))
-    roles = np.array(['adult'] * len(data['household_id'])) # for now, every member of a household is an adult
-    builder.join_with_persons(households, np.array(data['household_id']), roles) # define person-house memberships
+    if data_dir is None:
+        data_dir = 'inputs'
+    person_file = pd.read_csv(os.path.join(data_dir, "person.csv"))
+    family_file = pd.read_csv(os.path.join(data_dir, "family.csv"))
+    person_ids = np.array(person_file['person_id'])
+    family_ids = np.array(family_file['family_id'])
+    builder.declare_person_entity('person', person_ids)
+    families = builder.declare_entity('family', family_ids)
+    person_roles = person_file['role']
+    builder.join_with_persons(families, np.array(person_file['family_id']), person_roles) # define person-family memberships
     model = builder.build(system)
-    for column in data.columns[3:]:
-        model.set_input(column, period, np.array(data[column])) # input data for income and benefit claims
+    for column in person_file.columns[4:]:
+        model.set_input(column, period, np.array(person_file[column])) # input data for person data
+    for column in family_file.columns[2:]:
+        model.set_input(column, period, np.array(family_file[column])) # input data for family data
     return model
