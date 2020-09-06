@@ -7,7 +7,7 @@ import seaborn as sns
 
 simulation = model(data_dir="inputs")
 period = "2020-08"
-'''
+
 child_benefit = simulation.calculate('child_benefit', period)
 child_benefit_actual = simulation.calculate('child_benefit_actual', period)
 cb_error = np.abs(child_benefit - child_benefit_actual)
@@ -22,7 +22,7 @@ income_support = simulation.calculate('income_support', period)
 income_support_actual = simulation.calculate('income_support_actual', period)
 is_error = np.abs(income_support - income_support_actual)
 is_average_error = is_error.mean()
-'''
+
 
 income = simulation.calculate('income', period) * 52
 etr = simulation.calculate('effective_tax_rate', period)
