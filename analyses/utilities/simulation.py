@@ -29,15 +29,21 @@ def model(*reforms, data_dir=None, period='2020-01'):
         data_dir = 'inputs'
     person_file = pd.read_csv(os.path.join(data_dir, "person.csv"))
     family_file = pd.read_csv(os.path.join(data_dir, "family.csv"))
+    household_file = pd.read_csv(os.path.join(data_dir, "household.csv"))
     person_ids = np.array(person_file['person_id'])
     family_ids = np.array(family_file['family_id'])
+    household_ids = np.array(household_file['household_id'])
     builder.declare_person_entity('person', person_ids)
     families = builder.declare_entity('family', family_ids)
+    households = builder.declare_entity('household', household_ids)
     person_roles = person_file['role']
     builder.join_with_persons(families, np.array(person_file['family_id']), person_roles) # define person-family memberships
+    builder.join_with_persons(households, np.array(person_file['household_id']), person_roles)
     model = builder.build(system)
     for column in person_file.columns[4:]:
         model.set_input(column, period, np.array(person_file[column])) # input data for person data
     for column in family_file.columns[2:]:
         model.set_input(column, period, np.array(family_file[column])) # input data for family data
+    for column in household_file.columns[1:]:
+        model.set_input(column, period, np.array(household_file[column])) # input data for household data
     return model

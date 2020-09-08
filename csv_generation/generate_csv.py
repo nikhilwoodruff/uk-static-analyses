@@ -3,17 +3,18 @@ import os
 import shutil
 from tqdm import tqdm
 import argparse
+from random import random
 
 def clean_dirs(output_dir):
     if os.path.exists(output_dir):
         shutil.rmtree(output_dir)
     os.makedirs(output_dir)
 
-def write_person_file(data_dir, output_dir):
+def write_person_file(data_dir, output_dir, weights=None):
     with open(os.path.join(output_dir, "person.csv"), "w+", encoding="utf-8", newline="") as g:
         with open(os.path.join(data_dir, "adult.tab"), encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
-            fieldnames = ["person_id", "household_id", "family_id", "role", "age_band", "JSA_receipt", "IS_receipt", "pension_income", "employee_earnings", "self_employed_earnings", "investment_income"]
+            fieldnames = ["person_id", "household_id", "family_id", "role", "age_band", "JSA_receipt", "IS_receipt", "pension_income", "employee_earnings", "self_employed_earnings", "investment_income", "hours_worked", "adult_weight"]
             writer = csv.DictWriter(g, fieldnames=fieldnames)
             writer.writeheader()
             skipped = 0
@@ -33,6 +34,8 @@ def write_person_file(data_dir, output_dir):
                         "employee_earnings": line["INEARNS"],
                         "self_employed_earnings": line["INCSEO2"] if line["INCSEO2"] != " " else 0,
                         "investment_income": line["ININV"],
+                        "hours_worked": line["TOTHOURS"] if line["TOTHOURS"] != " " else 0,
+                        "adult_weight": line["GROSS4"]
                     }
                     for key in person.keys():
                         if key not in string_keys and key not in allowed_to_be_negative:
@@ -60,6 +63,8 @@ def write_person_file(data_dir, output_dir):
                         "employee_earnings": 0,
                         "self_employed_earnings": 0,
                         "investment_income": 0,
+                        "hours_worked": 0,
+                        "adult_weight": 0
                     }
                     for key in person.keys():
                         if key not in string_keys:
@@ -69,11 +74,11 @@ def write_person_file(data_dir, output_dir):
                     skipped += 1
             print(f"Children: skipped {skipped} rows.")
 
-def write_family_file(data_dir, output_dir):
+def write_family_file(data_dir, output_dir, weights=None):
     with open(os.path.join(output_dir, "family.csv"), "w+", encoding="utf-8", newline="") as g:
         with open(os.path.join(data_dir, "benunit.tab"), encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
-            fieldnames = ["household_id", "family_id", "JSA_actual", "num_children_actual", "income_support_actual", "housing_benefit_actual", "child_tax_credit_actual", "working_tax_credit_actual", "child_benefit_actual"]
+            fieldnames = ["household_id", "family_id", "JSA_actual", "num_children_actual", "income_support_actual", "housing_benefit_actual", "child_tax_credit_actual", "working_tax_credit_actual", "child_benefit_actual", "family_weight"]
             writer = csv.DictWriter(g, fieldnames=fieldnames)
             writer.writeheader()
             skipped = 0
@@ -95,7 +100,8 @@ def write_family_file(data_dir, output_dir):
                         "income_support_actual": 0,
                         "housing_benefit_actual": 0,
                         "child_tax_credit_actual": 0,
-                        "working_tax_credit_actual": 0
+                        "working_tax_credit_actual": 0,
+                        "family_weight": line["GROSS4"]
                     }
                     for key in family.keys():
                         if key not in string_keys:
@@ -127,6 +133,30 @@ def write_family_file(data_dir, output_dir):
 
         for family_id, family in tqdm(family_data.items(), desc="Writing family file"):
             writer.writerow(family)
+        print("Wrote family file.")
+
+def write_household_file(data_dir, output_dir, weights=None):
+    with open(os.path.join(output_dir, "household.csv"), "w+", encoding="utf-8", newline="") as g:
+        with open(os.path.join(data_dir, "househol.tab"), encoding="utf-8") as f:
+            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+            fieldnames = ["household_id", "household_weight"]
+            writer = csv.DictWriter(g, fieldnames=fieldnames)
+            writer.writeheader()
+            skipped = 0
+            for line in tqdm(reader, desc="Writing households into household file", total=19169):
+                try:
+                    string_keys = ["household_id"]
+                    household = {
+                        "household_id": line["sernum"],
+                        "household_weight": line["GROSS4"]
+                    }
+                    for key in household.keys():
+                        if key not in string_keys:
+                            assert float(household[key]) >= 0
+                    writer.writerow(household)
+                except Exception as e:
+                    skipped += 1
+            print(f"Households: skipped {skipped} rows.")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Utility for generating OpenFisca-UK-compatible input files from Family Resources Survey data files.")
@@ -136,3 +166,4 @@ if __name__ == '__main__':
     clean_dirs(args.output_dir)
     write_person_file(args.data_dir, args.output_dir)
     write_family_file(args.data_dir, args.output_dir)
+    write_household_file(args.data_dir, args.output_dir)
