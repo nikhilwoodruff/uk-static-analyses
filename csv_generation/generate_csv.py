@@ -14,7 +14,7 @@ def write_person_file(data_dir, output_dir, weights=None):
     with open(os.path.join(output_dir, "person.csv"), "w+", encoding="utf-8", newline="") as g:
         with open(os.path.join(data_dir, "adult.tab"), encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
-            fieldnames = ["person_id", "household_id", "family_id", "role", "age_band", "JSA_receipt", "IS_receipt", "pension_income", "employee_earnings", "self_employed_earnings", "investment_income", "hours_worked", "adult_weight"]
+            fieldnames = ["person_id", "household_id", "family_id", "role", "age_band", "JSA_receipt", "IS_receipt", "pension_income", "employee_earnings", "self_employed_earnings", "investment_income", "hours_worked", "adult_weight", "disabled"]
             writer = csv.DictWriter(g, fieldnames=fieldnames)
             writer.writeheader()
             skipped = 0
@@ -35,7 +35,8 @@ def write_person_file(data_dir, output_dir, weights=None):
                         "self_employed_earnings": line["INCSEO2"] if line["INCSEO2"] != " " else 0,
                         "investment_income": line["ININV"],
                         "hours_worked": line["TOTHOURS"] if line["TOTHOURS"] != " " else 0,
-                        "adult_weight": line["GROSS4"]
+                        "adult_weight": line["GROSS4"],
+                        "disabled": line["LAREG"]
                     }
                     for key in person.keys():
                         if key not in string_keys and key not in allowed_to_be_negative:
@@ -64,7 +65,8 @@ def write_person_file(data_dir, output_dir, weights=None):
                         "self_employed_earnings": 0,
                         "investment_income": 0,
                         "hours_worked": 0,
-                        "adult_weight": 0
+                        "adult_weight": 0,
+                        "disabled": line["LAREG"]
                     }
                     for key in person.keys():
                         if key not in string_keys:

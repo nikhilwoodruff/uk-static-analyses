@@ -5,35 +5,34 @@ from utilities.simulation import model
 from utilities.visualisation import banded_lineplot
 import seaborn as sns
 from tqdm import tqdm
+from ballpark import business
 
 simulation = model(data_dir="inputs")
 period = "2020-08"
-'''
-child_benefit = simulation.calculate('child_benefit', period)
-child_benefit_actual = simulation.calculate('child_benefit_actual', period)
-cb_error = np.abs(child_benefit - child_benefit_actual)
-cb_error_among_actual_claimants = cb_error[child_benefit_actual > 0]
-cb_average_error = cb_error.mean()
-cb_average_error_among_claimants = cb_error_among_actual_claimants.mean()
 
-print(f"Child Benefit average error: {cb_average_error}")
+full_time_workers = (simulation.calculate("hours_worked", period) >= 30)
+part_time_workers = (simulation.calculate("hours_worked", period) > 0) * (simulation.calculate("hours_worked", period) < 30)
+survey_weights = simulation.calculate("adult_weight", period) * (simulation.calculate("employee_earnings", period) > 0) * (simulation.calculate("self_employed_earnings", period) == 0)
 
-JSA = simulation.calculate('JSA', period)
-JSA_actual = simulation.calculate('JSA_actual', period)
-JSA_error = np.abs(JSA - JSA_actual)
-JSA_average_error = JSA_error.mean()
+ft = survey_weights*full_time_workers
+pt = survey_weights*part_time_workers
 
-print(f"JSA average error: {JSA_average_error}")
+salary = simulation.calculate("employee_earnings", period)
+income = simulation.calculate("income", period)
 
-income_support = simulation.calculate('income_support', period)
-income_support_actual = simulation.calculate('income_support_actual', period)
-is_error = np.abs(income_support - income_support_actual)
-is_average_error = is_error.mean()
+mean_ft_salary = np.average(salary, weights=ft) * 52
+mean_pt_salary = np.average(salary, weights=pt) * 52
 
-print(f"Income Support average error: {is_average_error}")
-'''
-income = simulation.calculate('income', period) * 52
-pass
-etr = simulation.calculate('effective_tax_rate', period)
-banded_lineplot(income, etr)
-plt.show()
+print(f"Mean full-time salary: {business(mean_ft_salary)}")
+print(f"Mean part-time salary: {business(mean_pt_salary)}")
+
+income_tax = simulation.calculate("income_tax", period)
+NI = simulation.calculate("NI", period)
+
+etr = np.where(income == 0, 0, (income_tax + NI) / income)
+
+mean_etr_ft = np.average(etr, weights=ft)
+mean_etr_pt = np.average(etr, weights=pt)
+
+print(f"Mean full-time ETR: {mean_etr_ft}")
+print(f"Mean part-time ETR: {mean_etr_pt}")
