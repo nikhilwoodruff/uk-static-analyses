@@ -8,17 +8,23 @@ baseline = model(data_dir="inputs")
 reformed = model(simple_bi_reform, data_dir="inputs")
 period = "2020-09-10"
 
+poverty_in_baseline = baseline.calculate("family_total_income", period) < 340
 family_weights = baseline.calculate("family_weight", period)
 adult_weights = baseline.calculate("adult_weight", period)
 net_cost = reformed.calculate("family_net_income", period) - baseline.calculate("family_net_income", period)
 total_net_cost = (net_cost * family_weights).sum() * 52
-print(business(total_net_cost))
+
+net_among_poverty = np.average(net_cost, weights=poverty_in_baseline*family_weights)
+net_among_all = np.average(net_cost, weights=family_weights)
+
+print(f"Net cost: {business(total_net_cost)}")
 
 ubi_cost = (reformed.calculate("family_basic_income", period) * family_weights).sum() * 52
+print(f"Gross UBI cost: {business(ubi_cost)}")
 
 diff_vars_adult = [
     "income_tax",
-    "NI",
+    "NI"
 ]
 
 diff_vars_family = [
@@ -27,6 +33,7 @@ diff_vars_family = [
     "child_tax_credit",
     "contributory_JSA",
     "income_JSA",
+    "income_support"
 ]
 
 for var in diff_vars_adult:
