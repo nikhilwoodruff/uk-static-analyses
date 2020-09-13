@@ -7,8 +7,9 @@ import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
 import os
+import pandas as pd
 
-def model(*reforms, data_dir=None, period='2020-01'):
+def model(*reforms, data_dir="inputs", period='2020-01'):
     '''
     Create and populate a tax-benefit simulation model from OpenFisca.
 
@@ -47,3 +48,31 @@ def model(*reforms, data_dir=None, period='2020-01'):
     for column in household_file.columns[1:]:
         model.set_input(column, period, np.array(household_file[column])) # input data for household data
     return model
+
+def entity_df(model, entity="family", period="2020-09-12"):
+    '''
+    Create and populate a DataFram with all variables in the simulation
+
+    Arguments:
+        model: the model to use.
+        entity: the entity to calculate variables for.
+        period: the period for which to calculate all data.
+    
+    Returns:
+        A DataFrame
+    '''
+    if entity not in ["family", "person", "household"]:
+        raise Exception("Unsupported entity.")
+    if entity == "family":
+        weight_col = "family_weight"
+    elif entity == "person":
+        weight_col = "adult_weight"
+    else:
+        weight_col = "household_weight"
+    df = pd.DataFrame()
+    variables = model.tax_benefit_system.variables.keys()
+    entity_variables = list(filter(lambda x : model.tax_benefit_system.variables[x].entity.key == entity, variables))
+    for var in entity_variables:
+        df[var] = model.calculate(var, period)
+        df[f"{var}_m"] = model.calculate(weight_col, period)
+    return df

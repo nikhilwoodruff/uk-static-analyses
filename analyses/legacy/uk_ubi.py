@@ -1,7 +1,7 @@
 from utilities.simulation import model
 from openfisca_uk.reforms.basic_income.simple_reform import simple_bi_reform
 import numpy as np
-from ballpark import business
+from rdbl import num, gbp
 from matplotlib import pyplot as plt
 
 baseline = model(data_dir="inputs")
@@ -17,10 +17,10 @@ total_net_cost = (net_cost * family_weights).sum() * 52
 net_among_poverty = np.average(net_cost, weights=poverty_in_baseline*family_weights)
 net_among_all = np.average(net_cost, weights=family_weights)
 
-print(f"Net cost: {business(total_net_cost)}")
+print(f"Net cost: {gbp(total_net_cost)}")
 
 ubi_cost = (reformed.calculate("family_basic_income", period) * family_weights).sum() * 52
-print(f"Gross UBI cost: {business(ubi_cost)}")
+print(f"Gross UBI cost: {gbp(ubi_cost)}")
 
 diff_vars_adult = [
     "income_tax",
@@ -38,8 +38,8 @@ diff_vars_family = [
 
 for var in diff_vars_adult:
     diff = ((reformed.calculate(var, period) - baseline.calculate(var, period)) * adult_weights).sum() * 52
-    print(f"{var}:{business(diff)}")
+    print(f"{var}: {gbp(diff)}")
 
 for var in diff_vars_family:
     diff = ((reformed.calculate(var, period) - baseline.calculate(var, period)) * family_weights).sum() * 52
-    print(f"{var}:{business(diff)}")
+    print(f"{var}: {gbp(diff)}")
