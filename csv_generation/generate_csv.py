@@ -14,34 +14,39 @@ def write_person_file(data_dir, output_dir, weights=None):
     with open(os.path.join(output_dir, "person.csv"), "w+", encoding="utf-8", newline="") as g:
         with open(os.path.join(data_dir, "adult.tab"), encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
-            fieldnames = ["person_id", "household_id", "family_id", "role", "age_band", "JSA_receipt", "IS_receipt", "pension_income", "employee_earnings", "self_employed_earnings", "investment_income", "hours_worked", "adult_weight", "disabled"]
+            fieldnames = ["person_id", "household_id", "family_id", "role", "is_male", "is_state_pension_age", "age_band", "JSA_receipt", "IS_receipt", "pension_income_actual", "employee_earnings", "self_employed_earnings", "state_pension_actual", "investment_income", "hours_worked", "adult_weight", "disabled"]
             writer = csv.DictWriter(g, fieldnames=fieldnames)
             writer.writeheader()
             skipped = 0
+            person_data = {}
             for line in tqdm(reader, desc="Writing adults into person file", total=33238):
                 try:
                     string_keys = ["person_id", "household_id", "family_id", "role"]
+                    person_id = line["sernum"] + "f" + line["BENUNIT"] + "p" + line["PERSON"]
                     allowed_to_be_negative = ["self_employed_earnings"]
                     person = {
                         "person_id": line["sernum"] + "p" + line["PERSON"],
                         "household_id": line["sernum"],
                         "family_id": line["sernum"] + "f" + line["BENUNIT"],
+                        "is_male": line["SEX"] == 1,
+                        "is_state_pension_age": line["PENFLAG"] == "1",
                         "role": "adult",
                         "age_band": int(line["IAGEGR4"]),
                         "JSA_receipt": 1 if line["WAGEBEN6"] == '1' else 0,
                         "IS_receipt": 1 if line["WAGEBEN5"] == '1' else 0,
-                        "pension_income": line["INPENINC"],
+                        "pension_income_actual": line["INPENINC"],
                         "employee_earnings": line["INEARNS"],
                         "self_employed_earnings": line["INCSEO2"] if line["INCSEO2"] != " " else 0,
                         "investment_income": line["ININV"],
                         "hours_worked": line["TOTHOURS"] if line["TOTHOURS"] != " " else 0,
                         "adult_weight": line["GROSS4"],
-                        "disabled": line["LAREG"]
+                        "disabled": line["LAREG"] == "1",
+                        "state_pension_actual": 0
                     }
                     for key in person.keys():
                         if key not in string_keys and key not in allowed_to_be_negative:
                             assert float(person[key]) >= 0
-                    writer.writerow(person)
+                    person_data[person_id] = person
                 except Exception as e:
                     skipped += 1
             print(f"Adults: skipped {skipped} rows.")
@@ -52,6 +57,7 @@ def write_person_file(data_dir, output_dir, weights=None):
             for line in tqdm(reader, desc="Writing children into person file", total=9849):
                 try:
                     string_keys = ["person_id", "household_id", "family_id", "role"]
+                    person_id = line["sernum"] + "f" + line["BENUNIT"] + "p" + line["PERSON"]
                     person = {
                         "person_id": line["sernum"] + "p" + line["PERSON"],
                         "household_id": line["sernum"],
@@ -60,21 +66,41 @@ def write_person_file(data_dir, output_dir, weights=None):
                         "age_band": 0,
                         "JSA_receipt": 0,
                         "IS_receipt": 0,
-                        "pension_income": 0,
+                        "pension_income_actual": 0,
                         "employee_earnings": 0,
                         "self_employed_earnings": 0,
                         "investment_income": 0,
+                        "state_pension_actual": 0,
                         "hours_worked": 0,
                         "adult_weight": 0,
-                        "disabled": line["LAREG"]
+                        "disabled": line["LAREG"] == "1"
                     }
                     for key in person.keys():
                         if key not in string_keys:
                             assert float(person[key]) >= 0
-                    writer.writerow(person)
+                    person_data[person_id] = person
                 except:
                     skipped += 1
             print(f"Children: skipped {skipped} rows.")
+        
+        with open(os.path.join(data_dir, "benefits.tab"), encoding="utf-8") as f:
+            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+            skipped = 0
+            benefit_codes = {
+                "5": "state_pension",
+            }
+            for line in tqdm(reader, desc="Writing benefits into person file", total=38475):
+                try:
+                    person_id = line["sernum"] + "f" + line["BENUNIT"] + "p" + line["PERSON"]
+                    if line["BENEFIT"] in benefit_codes:
+                        person_data[person_id][benefit_codes[line["BENEFIT"]] + "_actual"] = float(line["BENAMT"])
+                except:
+                    skipped += 1
+            print(f"Benefits: skipped {skipped} rows.")
+
+        for person_id, person in tqdm(person_data.items(), desc="Writing person file"):
+            writer.writerow(person)
+        print("Wrote person file.")
 
 def write_family_file(data_dir, output_dir, weights=None):
     with open(os.path.join(output_dir, "family.csv"), "w+", encoding="utf-8", newline="") as g:
