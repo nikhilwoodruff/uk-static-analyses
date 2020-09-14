@@ -26,16 +26,10 @@ print(f"Net cost of reform: {gbp(total_net_cost)}")
 ubi_cost = (reformed.calculate("family_basic_income", period) * family_weights).sum() * 52
 print(f"Gross UBI cost: {gbp(ubi_cost)}")
 
-x = baseline.calculate("state_pension_actual", period)
-y = baseline.calculate("pension_income_actual", period)
-z = baseline.calculate("pension_income", period)
-a = baseline.calculate("private_pension_income", period)
-
 diff_vars_adult = [
     "income_tax",
     "NI",
-    "pension_income",
-    "private_pension_income"
+    "pension_income"
 ]
 
 diff_vars_family = [
