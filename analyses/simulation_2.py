@@ -57,19 +57,19 @@ adult_baseline_df = entity_df(baseline, entity="person")
 adult_reform_df = entity_df(reformed, entity="person")
 
 ax = mdf.quantile_chg_plot(family_baseline_df, family_reform_df, 'family_net_income', 'family_net_income',
-                           'family_weight', 'family_weight', title="Change in family net income per week")
+                           'family_weight', 'family_weight')
 
 
 ax = mdf.quantile_chg_plot(family_baseline_df, family_reform_df, 'family_post_tax_income', 'family_post_tax_income',
-                           'family_weight', 'family_weight', title="Change in family post-tax income per week")
+                           'family_weight', 'family_weight')
 
 
 ax = mdf.quantile_chg_plot(adult_baseline_df, adult_reform_df, 'income_tax', 'income_tax',
-                           'adult_weight', 'adult_weight', title="Change in individual income tax liability per week")
+                           'adult_weight', 'adult_weight')
 
 
 ax = mdf.quantile_chg_plot(adult_baseline_df, adult_reform_df, 'NI', 'NI',
-                           'adult_weight', 'adult_weight', title="Change in National Insurance liability per week")
+                           'adult_weight', 'adult_weight')
 
 input("Press ENTER to show decile graphs.")
 
