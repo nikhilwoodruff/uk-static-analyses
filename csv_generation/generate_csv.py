@@ -14,7 +14,7 @@ def write_person_file(data_dir, output_dir, weights=None):
     with open(os.path.join(output_dir, "person.csv"), "w+", encoding="utf-8", newline="") as g:
         with open(os.path.join(data_dir, "adult.tab"), encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
-            fieldnames = ["person_id", "household_id", "family_id", "role", "is_male", "is_state_pension_age", "age_band", "JSA_receipt", "IS_receipt", "pension_income_actual", "employee_earnings", "self_employed_earnings", "state_pension_actual", "investment_income", "hours_worked", "adult_weight", "disabled"]
+            fieldnames = ["person_id", "household_id", "family_id", "role", "is_male", "is_state_pension_age", "age_band", "JSA_receipt", "IS_receipt", "private_pension_actual", "employee_earnings", "self_employed_earnings", "state_pension_actual", "investment_income", "hours_worked", "adult_weight", "disabled"]
             writer = csv.DictWriter(g, fieldnames=fieldnames)
             writer.writeheader()
             skipped = 0
@@ -34,7 +34,7 @@ def write_person_file(data_dir, output_dir, weights=None):
                         "age_band": int(line["IAGEGR4"]),
                         "JSA_receipt": 1 if line["WAGEBEN6"] == '1' else 0,
                         "IS_receipt": 1 if line["WAGEBEN5"] == '1' else 0,
-                        "pension_income_actual": line["INPENINC"],
+                        "private_pension_actual": line["INPENINC"],
                         "employee_earnings": line["INEARNS"],
                         "self_employed_earnings": line["INCSEO2"] if line["INCSEO2"] != " " else 0,
                         "investment_income": line["ININV"],
@@ -66,7 +66,7 @@ def write_person_file(data_dir, output_dir, weights=None):
                         "age_band": 0,
                         "JSA_receipt": 0,
                         "IS_receipt": 0,
-                        "pension_income_actual": 0,
+                        "private_pension_actual": 0,
                         "employee_earnings": 0,
                         "self_employed_earnings": 0,
                         "investment_income": 0,
