@@ -1,8 +1,8 @@
-rdbl==0.1.2
-OpenFisca_Core==34.7.3
-OpenFisca_UK
-seaborn==0.10.1
-tqdm==4.48.2
-pandas==1.1.0
 numpy==1.17.5
+tqdm==4.48.2
+rdbl==0.1.0
+pandas==1.1.0
+ballpark==1.4.0
+OpenFisca_Core==34.7.3
 matplotlib==3.3.0
+seaborn==0.10.1
