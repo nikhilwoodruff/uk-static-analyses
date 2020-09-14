@@ -71,4 +71,6 @@ ax = mdf.quantile_chg_plot(adult_baseline_df, adult_reform_df, 'income_tax', 'in
 ax = mdf.quantile_chg_plot(adult_baseline_df, adult_reform_df, 'NI', 'NI',
                            'adult_weight', 'adult_weight', title="Change in National Insurance liability per week")
 
+input("Press ENTER to show decile graphs.")
+
 plt.show()
