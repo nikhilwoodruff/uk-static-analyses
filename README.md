@@ -4,7 +4,7 @@ This repository houses static analyses using the OpenFisca microsimulation model
 
 ## Usage
 
-To run, first ensure that all dependencies are installed. OpenFisca-UK should be installed - right now it is in early stages, so this can be done by cloning the [repository](https://github.com/nikhilwoodruff/openfisca-uk) and running in the folder:
+To run, first ensure that all dependencies are installed. OpenFisca-UK should be installed - right now it is in early stages, so this can be done via:
 ```console
-pip install -e .
+pip install git+git://github.com/nikhilwoodruff/openfisca-uk
 ```
