@@ -10,12 +10,18 @@ from ballpark import business
 simulation = model(data_dir="inputs")
 period = "2020-08"
 
-full_time_workers = (simulation.calculate("hours_worked", period) >= 30)
-part_time_workers = (simulation.calculate("hours_worked", period) > 0) * (simulation.calculate("hours_worked", period) < 30)
-survey_weights = simulation.calculate("adult_weight", period) * (simulation.calculate("employee_earnings", period) > 0) * (simulation.calculate("self_employed_earnings", period) == 0)
+full_time_workers = simulation.calculate("hours_worked", period) >= 30
+part_time_workers = (simulation.calculate("hours_worked", period) > 0) * (
+    simulation.calculate("hours_worked", period) < 30
+)
+survey_weights = (
+    simulation.calculate("adult_weight", period)
+    * (simulation.calculate("employee_earnings", period) > 0)
+    * (simulation.calculate("self_employed_earnings", period) == 0)
+)
 
-ft = survey_weights*full_time_workers
-pt = survey_weights*part_time_workers
+ft = survey_weights * full_time_workers
+pt = survey_weights * part_time_workers
 
 salary = simulation.calculate("employee_earnings", period)
 income = simulation.calculate("income", period)

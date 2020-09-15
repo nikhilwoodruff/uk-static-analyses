@@ -11,7 +11,9 @@ reformed = model(simple_bi_reform, data_dir="inputs")
 period = "2020-09-12"
 
 base_family_df = pd.DataFrame()
-base_family_df["family_net_income"] = baseline.calculate("family_net_income", period) * 52
+base_family_df["family_net_income"] = (
+    baseline.calculate("family_net_income", period) * 52
+)
 base_family_df["family_weight"] = baseline.calculate("family_weight", period)
 base_family_df["is_lone_parent"] = baseline.calculate("is_lone_parent", period)
 base_adult_df = pd.DataFrame()
@@ -19,7 +21,9 @@ base_adult_df["effective_tax_rate"] = baseline.calculate("effective_tax_rate", p
 base_adult_df["adult_weight"] = baseline.calculate("adult_weight", period)
 
 reform_family_df = pd.DataFrame()
-reform_family_df["family_net_income"] = reformed.calculate("family_net_income", period) * 52
+reform_family_df["family_net_income"] = (
+    reformed.calculate("family_net_income", period) * 52
+)
 reform_family_df["family_weight"] = reformed.calculate("family_weight", period)
 reform_family_df["is_lone_parent"] = reformed.calculate("is_lone_parent", period)
 reform_adult_df = pd.DataFrame()
@@ -31,7 +35,12 @@ gini_reform = mdf.gini(reform_family_df, "family_net_income", w="family_weight")
 difference = (gini_reform - gini_baseline) / gini_baseline
 print(f"Gini reduction: {difference * 100}%")
 
-mdf.quantile_chg_plot(df1=base_family_df, df2=reform_family_df,
-                           col1='family_net_income', col2='family_net_income',
-                           w1='family_weight', w2='family_weight')
+mdf.quantile_chg_plot(
+    df1=base_family_df,
+    df2=reform_family_df,
+    col1="family_net_income",
+    col2="family_net_income",
+    w1="family_weight",
+    w2="family_weight",
+)
 plt.show()
