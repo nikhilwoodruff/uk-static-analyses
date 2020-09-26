@@ -20,7 +20,10 @@ def banded_lineplot(
     x = x[(x > lower) * (x < upper)]
     bins = np.linspace(lower, upper, num=num_bins + 1)
     contents = np.array(
-        [y[np.logical_and(x < bins[i + 1], x >= bins[i])] for i in range(num_bins)]
+        [
+            y[np.logical_and(x < bins[i + 1], x >= bins[i])]
+            for i in range(num_bins)
+        ]
     )
     indices = [i for i in range(len(contents)) if len(contents[i]) > 0]
     x_quantized = bins[indices]

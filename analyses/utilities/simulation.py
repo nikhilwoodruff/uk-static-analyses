@@ -26,7 +26,9 @@ def model(*reforms, data_dir="inputs", period="2020-01"):
     for reform in reforms:
         system = reform(system)  # apply each reform in order
     builder = SimulationBuilder()
-    builder.create_entities(system)  # create the entities (person, benunit, etc.)
+    builder.create_entities(
+        system
+    )  # create the entities (person, benunit, etc.)
     if data_dir is None:
         data_dir = "inputs"
     person_file = pd.read_csv(os.path.join(data_dir, "person.csv"))
@@ -85,7 +87,8 @@ def entity_df(model, entity="benunit", period="2020-09-12"):
     variables = model.tax_benefit_system.variables.keys()
     entity_variables = list(
         filter(
-            lambda x: model.tax_benefit_system.variables[x].entity.key == entity,
+            lambda x: model.tax_benefit_system.variables[x].entity.key
+            == entity,
             variables,
         )
     )

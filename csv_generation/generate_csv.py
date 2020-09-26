@@ -14,10 +14,15 @@ def clean_dirs(output_dir):
 
 def write_person_file(data_dir, output_dir, weights=None):
     with open(
-        os.path.join(output_dir, "person.csv"), "w+", encoding="utf-8", newline=""
+        os.path.join(output_dir, "person.csv"),
+        "w+",
+        encoding="utf-8",
+        newline="",
     ) as g:
         with open(os.path.join(data_dir, "adult.tab"), encoding="utf-8") as f:
-            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+            reader = csv.DictReader(
+                f, fieldnames=next(f).split("\t"), delimiter="\t"
+            )
             fieldnames = [
                 "person_id",
                 "household_id",
@@ -45,9 +50,18 @@ def write_person_file(data_dir, output_dir, weights=None):
                 reader, desc="Writing adults into person file", total=33238
             ):
                 try:
-                    string_keys = ["person_id", "household_id", "family_id", "role"]
+                    string_keys = [
+                        "person_id",
+                        "household_id",
+                        "family_id",
+                        "role",
+                    ]
                     person_id = (
-                        line["sernum"] + "f" + line["BENUNIT"] + "p" + line["PERSON"]
+                        line["sernum"]
+                        + "f"
+                        + line["BENUNIT"]
+                        + "p"
+                        + line["PERSON"]
                     )
                     allowed_to_be_negative = ["self_employed_earnings"]
                     person = {
@@ -74,7 +88,10 @@ def write_person_file(data_dir, output_dir, weights=None):
                         "state_pension_actual": 0,
                     }
                     for key in person.keys():
-                        if key not in string_keys and key not in allowed_to_be_negative:
+                        if (
+                            key not in string_keys
+                            and key not in allowed_to_be_negative
+                        ):
                             assert float(person[key]) >= 0
                     person_data[person_id] = person
                 except Exception as e:
@@ -82,15 +99,26 @@ def write_person_file(data_dir, output_dir, weights=None):
             print(f"Adults: skipped {skipped} rows.")
 
         with open(os.path.join(data_dir, "child.tab"), encoding="utf-8") as f:
-            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+            reader = csv.DictReader(
+                f, fieldnames=next(f).split("\t"), delimiter="\t"
+            )
             skipped = 0
             for line in tqdm(
                 reader, desc="Writing children into person file", total=9849
             ):
                 try:
-                    string_keys = ["person_id", "household_id", "family_id", "role"]
+                    string_keys = [
+                        "person_id",
+                        "household_id",
+                        "family_id",
+                        "role",
+                    ]
                     person_id = (
-                        line["sernum"] + "f" + line["BENUNIT"] + "p" + line["PERSON"]
+                        line["sernum"]
+                        + "f"
+                        + line["BENUNIT"]
+                        + "p"
+                        + line["PERSON"]
                     )
                     person = {
                         "person_id": line["sernum"] + "p" + line["PERSON"],
@@ -117,8 +145,12 @@ def write_person_file(data_dir, output_dir, weights=None):
                     skipped += 1
             print(f"Children: skipped {skipped} rows.")
 
-        with open(os.path.join(data_dir, "benefits.tab"), encoding="utf-8") as f:
-            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+        with open(
+            os.path.join(data_dir, "benefits.tab"), encoding="utf-8"
+        ) as f:
+            reader = csv.DictReader(
+                f, fieldnames=next(f).split("\t"), delimiter="\t"
+            )
             skipped = 0
             benefit_codes = {
                 "5": "state_pension",
@@ -128,7 +160,11 @@ def write_person_file(data_dir, output_dir, weights=None):
             ):
                 try:
                     person_id = (
-                        line["sernum"] + "f" + line["BENUNIT"] + "p" + line["PERSON"]
+                        line["sernum"]
+                        + "f"
+                        + line["BENUNIT"]
+                        + "p"
+                        + line["PERSON"]
                     )
                     if line["BENEFIT"] in benefit_codes:
                         person_data[person_id][
@@ -138,17 +174,26 @@ def write_person_file(data_dir, output_dir, weights=None):
                     skipped += 1
             print(f"Benefits: skipped {skipped} rows.")
 
-        for person_id, person in tqdm(person_data.items(), desc="Writing person file"):
+        for person_id, person in tqdm(
+            person_data.items(), desc="Writing person file"
+        ):
             writer.writerow(person)
         print("Wrote person file.")
 
 
 def write_family_file(data_dir, output_dir, weights=None):
     with open(
-        os.path.join(output_dir, "family.csv"), "w+", encoding="utf-8", newline=""
+        os.path.join(output_dir, "family.csv"),
+        "w+",
+        encoding="utf-8",
+        newline="",
     ) as g:
-        with open(os.path.join(data_dir, "benunit.tab"), encoding="utf-8") as f:
-            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+        with open(
+            os.path.join(data_dir, "benunit.tab"), encoding="utf-8"
+        ) as f:
+            reader = csv.DictReader(
+                f, fieldnames=next(f).split("\t"), delimiter="\t"
+            )
             fieldnames = [
                 "household_id",
                 "family_id",
@@ -169,7 +214,11 @@ def write_family_file(data_dir, output_dir, weights=None):
                 reader, desc="Writing families into family file", total=22406
             ):
                 try:
-                    string_keys = ["household_id", "family_id", "family_structure"]
+                    string_keys = [
+                        "household_id",
+                        "family_id",
+                        "family_structure",
+                    ]
                     family_id = line["sernum"] + "f" + line["BENUNIT"]
                     try:
                         total_benefit_income = (
@@ -199,8 +248,12 @@ def write_family_file(data_dir, output_dir, weights=None):
                     skipped += 1
             print(f"Families: skipped {skipped} rows.")
 
-        with open(os.path.join(data_dir, "benefits.tab"), encoding="utf-8") as f:
-            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+        with open(
+            os.path.join(data_dir, "benefits.tab"), encoding="utf-8"
+        ) as f:
+            reader = csv.DictReader(
+                f, fieldnames=next(f).split("\t"), delimiter="\t"
+            )
             skipped = 0
             benefit_codes = {
                 "14": "JSA",
@@ -223,23 +276,34 @@ def write_family_file(data_dir, output_dir, weights=None):
                     skipped += 1
             print(f"Benefits: skipped {skipped} rows.")
 
-        for family_id, family in tqdm(family_data.items(), desc="Writing family file"):
+        for family_id, family in tqdm(
+            family_data.items(), desc="Writing family file"
+        ):
             writer.writerow(family)
         print("Wrote family file.")
 
 
 def write_household_file(data_dir, output_dir, weights=None):
     with open(
-        os.path.join(output_dir, "household.csv"), "w+", encoding="utf-8", newline=""
+        os.path.join(output_dir, "household.csv"),
+        "w+",
+        encoding="utf-8",
+        newline="",
     ) as g:
-        with open(os.path.join(data_dir, "househol.tab"), encoding="utf-8") as f:
-            reader = csv.DictReader(f, fieldnames=next(f).split("\t"), delimiter="\t")
+        with open(
+            os.path.join(data_dir, "househol.tab"), encoding="utf-8"
+        ) as f:
+            reader = csv.DictReader(
+                f, fieldnames=next(f).split("\t"), delimiter="\t"
+            )
             fieldnames = ["household_id", "household_weight"]
             writer = csv.DictWriter(g, fieldnames=fieldnames)
             writer.writeheader()
             skipped = 0
             for line in tqdm(
-                reader, desc="Writing households into household file", total=19169
+                reader,
+                desc="Writing households into household file",
+                total=19169,
             ):
                 try:
                     string_keys = ["household_id"]

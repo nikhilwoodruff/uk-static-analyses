@@ -15,7 +15,10 @@ for month in tqdm(test_months, desc="Calcuating net incomes"):
     system = model(period=month)
     tax_amounts[month] = system.calculate("net_income", month)
     plot = banded_lineplot(
-        data["total_income"], tax_amounts[month], color=next(colors), bands=False
+        data["total_income"],
+        tax_amounts[month],
+        color=next(colors),
+        bands=False,
     )
 
 plot.set(xlim=[0, 12500])

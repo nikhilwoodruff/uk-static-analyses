@@ -16,7 +16,9 @@ data["net_income"] = baseline_model.calculate("net_income", period) * 12
 data["net_income_reformed"] = reform_model.calculate("net_income", period) * 12
 data["total_income"] *= 12
 plot = banded_lineplot(data["total_income"], data["net_income"])
-plot = banded_lineplot(data["total_income"], data["net_income_reformed"], color="red")
+plot = banded_lineplot(
+    data["total_income"], data["net_income_reformed"], color="red"
+)
 plot.set(xlim=[0, 150000])
 plot.set(ylim=[0, 150000])
 plt.legend(labels=["baseline", "reform"])

@@ -11,12 +11,14 @@ period = "2020-09-10"
 poverty_in_baseline = baseline.calculate("family_total_income", period) < 340
 family_weights = baseline.calculate("family_weight", period)
 adult_weights = baseline.calculate("adult_weight", period)
-net_cost = reformed.calculate("family_net_income", period) - baseline.calculate(
+net_cost = reformed.calculate(
     "family_net_income", period
-)
+) - baseline.calculate("family_net_income", period)
 total_net_cost = (net_cost * family_weights).sum() * 52
 
-net_among_poverty = np.average(net_cost, weights=poverty_in_baseline * family_weights)
+net_among_poverty = np.average(
+    net_cost, weights=poverty_in_baseline * family_weights
+)
 net_among_all = np.average(net_cost, weights=family_weights)
 
 print(f"Net cost: {gbp(total_net_cost)}")

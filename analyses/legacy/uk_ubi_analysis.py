@@ -17,7 +17,9 @@ base_family_df["family_net_income"] = (
 base_family_df["family_weight"] = baseline.calculate("family_weight", period)
 base_family_df["is_lone_parent"] = baseline.calculate("is_lone_parent", period)
 base_adult_df = pd.DataFrame()
-base_adult_df["effective_tax_rate"] = baseline.calculate("effective_tax_rate", period)
+base_adult_df["effective_tax_rate"] = baseline.calculate(
+    "effective_tax_rate", period
+)
 base_adult_df["adult_weight"] = baseline.calculate("adult_weight", period)
 
 reform_family_df = pd.DataFrame()
@@ -25,13 +27,21 @@ reform_family_df["family_net_income"] = (
     reformed.calculate("family_net_income", period) * 52
 )
 reform_family_df["family_weight"] = reformed.calculate("family_weight", period)
-reform_family_df["is_lone_parent"] = reformed.calculate("is_lone_parent", period)
+reform_family_df["is_lone_parent"] = reformed.calculate(
+    "is_lone_parent", period
+)
 reform_adult_df = pd.DataFrame()
-reform_adult_df["effective_tax_rate"] = reformed.calculate("effective_tax_rate", period)
+reform_adult_df["effective_tax_rate"] = reformed.calculate(
+    "effective_tax_rate", period
+)
 reform_adult_df["adult_weight"] = reformed.calculate("adult_weight", period)
 
-gini_baseline = mdf.gini(base_family_df, "family_net_income", w="family_weight")
-gini_reform = mdf.gini(reform_family_df, "family_net_income", w="family_weight")
+gini_baseline = mdf.gini(
+    base_family_df, "family_net_income", w="family_weight"
+)
+gini_reform = mdf.gini(
+    reform_family_df, "family_net_income", w="family_weight"
+)
 difference = (gini_reform - gini_baseline) / gini_baseline
 print(f"Gini reduction: {difference * 100}%")
 
