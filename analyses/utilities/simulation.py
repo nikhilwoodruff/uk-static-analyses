@@ -26,22 +26,22 @@ def model(*reforms, data_dir="inputs", period="2020-01"):
     for reform in reforms:
         system = reform(system)  # apply each reform in order
     builder = SimulationBuilder()
-    builder.create_entities(system)  # create the entities (person, family, etc.)
+    builder.create_entities(system)  # create the entities (person, benunit, etc.)
     if data_dir is None:
         data_dir = "inputs"
     person_file = pd.read_csv(os.path.join(data_dir, "person.csv"))
-    family_file = pd.read_csv(os.path.join(data_dir, "family.csv"))
+    benunit_file = pd.read_csv(os.path.join(data_dir, "benunit.csv"))
     household_file = pd.read_csv(os.path.join(data_dir, "household.csv"))
     person_ids = np.array(person_file["person_id"])
-    family_ids = np.array(family_file["family_id"])
+    benunit_ids = np.array(benunit_file["benunit_id"])
     household_ids = np.array(household_file["household_id"])
     builder.declare_person_entity("person", person_ids)
-    families = builder.declare_entity("family", family_ids)
+    families = builder.declare_entity("benunit", benunit_ids)
     households = builder.declare_entity("household", household_ids)
     person_roles = person_file["role"]
     builder.join_with_persons(
-        families, np.array(person_file["family_id"]), person_roles
-    )  # define person-family memberships
+        families, np.array(person_file["benunit_id"]), person_roles
+    )  # define person-benunit memberships
     builder.join_with_persons(
         households, np.array(person_file["household_id"]), person_roles
     )
@@ -50,10 +50,10 @@ def model(*reforms, data_dir="inputs", period="2020-01"):
         model.set_input(
             column, period, np.array(person_file[column])
         )  # input data for person data
-    for column in family_file.columns[2:]:
+    for column in benunit_file.columns[2:]:
         model.set_input(
-            column, period, np.array(family_file[column])
-        )  # input data for family data
+            column, period, np.array(benunit_file[column])
+        )  # input data for benunit data
     for column in household_file.columns[1:]:
         model.set_input(
             column, period, np.array(household_file[column])
@@ -61,7 +61,7 @@ def model(*reforms, data_dir="inputs", period="2020-01"):
     return model
 
 
-def entity_df(model, entity="family", period="2020-09-12"):
+def entity_df(model, entity="benunit", period="2020-09-12"):
     """
     Create and populate a DataFram with all variables in the simulation
 
@@ -73,10 +73,10 @@ def entity_df(model, entity="family", period="2020-09-12"):
     Returns:
         A DataFrame
     """
-    if entity not in ["family", "person", "household"]:
+    if entity not in ["benunit", "person", "household"]:
         raise Exception("Unsupported entity.")
-    if entity == "family":
-        weight_col = "family_weight"
+    if entity == "benunit":
+        weight_col = "benunit_weight"
     elif entity == "person":
         weight_col = "adult_weight"
     else:

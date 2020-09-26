@@ -1,8 +1,8 @@
 from utilities.simulation import model, entity_df
-from openfisca_uk.reforms.basic_income.simulation_1 import simulation_1
-from openfisca_uk.reforms.basic_income.simulation_2 import simulation_2
-from openfisca_uk.reforms.basic_income.simulation_3 import simulation_3
-from openfisca_uk.reforms.basic_income.simulation_4 import simulation_4
+from openfisca_uk.reforms.basic_income.reform_1 import reform_1
+from openfisca_uk.reforms.basic_income.reform_2 import reform_2
+from openfisca_uk.reforms.basic_income.reform_3 import reform_3
+from openfisca_uk.reforms.basic_income.reform_4 import reform_4
 import numpy as np
 from rdbl import gbp, num
 from matplotlib import pyplot as plt
@@ -55,7 +55,7 @@ def evaluate_reform(reform):
         print(f"        {var}: {gbp(diff)}")
 
 i = 1
-for reform in [simulation_1, simulation_2, simulation_3, simulation_4]:
+for reform in [reform_1, reform_2, reform_3, reform_4]:
     print(f"---SIMULATION {i}---")
     i += 1
     evaluate_reform(reform)
