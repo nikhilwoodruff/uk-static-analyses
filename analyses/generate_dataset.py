@@ -12,7 +12,7 @@ basic_columns = [
     "household_weight",
     "people_in_household",
     "adults_in_household",
-    "children_in_household"
+    "children_in_household",
 ]
 
 reform_columns = [

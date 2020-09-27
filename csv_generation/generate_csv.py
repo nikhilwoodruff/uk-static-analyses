@@ -11,6 +11,7 @@ def clean_dirs(output_dir):
         shutil.rmtree(output_dir)
     os.makedirs(output_dir)
 
+
 def safe(*texts):
     num = 0
     for text in texts:
@@ -43,7 +44,7 @@ def write_person_file(data_dir, output_dir):
                 "age_band",
                 "hours_worked",
                 "adult_weight",
-                "disabled"
+                "disabled",
             ]
             same_name_fields = [
                 "INEARNS",
@@ -57,9 +58,11 @@ def write_person_file(data_dir, output_dir):
                 "INRINC",
                 "INDUC",
                 "INDINC",
-                "NINDINC"
+                "NINDINC",
             ]
-            writer = csv.DictWriter(g, fieldnames=fieldnames + same_name_fields)
+            writer = csv.DictWriter(
+                g, fieldnames=fieldnames + same_name_fields
+            )
             writer.writeheader()
             skipped = 0
             person_data = {}
@@ -85,7 +88,7 @@ def write_person_file(data_dir, output_dir):
                         "age_band": int(line["IAGEGR4"]),
                         "hours_worked": safe(line["TOTHOURS"]),
                         "adult_weight": line["GROSS4"],
-                        "disabled": line["DISACTA1"] == "1"
+                        "disabled": line["DISACTA1"] == "1",
                     }
                     for field in same_name_fields:
                         person[field] = safe(line[field])
@@ -118,7 +121,7 @@ def write_person_file(data_dir, output_dir):
                         "age_band": 0,
                         "hours_worked": 0,
                         "adult_weight": 0,
-                        "disabled": line["DISACTC1"] == "1"
+                        "disabled": line["DISACTC1"] == "1",
                     }
                     for field in same_name_fields:
                         person[field] = 0
@@ -136,8 +139,7 @@ def write_person_file(data_dir, output_dir):
                 f, fieldnames=next(f).split("\t"), delimiter="\t"
             )
             skipped = 0
-            benefit_codes = {
-            }
+            benefit_codes = {}
             for line in tqdm(
                 reader, desc="Writing benefits into person file", total=38475
             ):
@@ -207,22 +209,31 @@ def write_benunit_file(data_dir, output_dir, weights=None):
                 "94": "housing_benefit",
                 "95": "universal_credit",
                 "96": "PIP_DL",
-                "97": "PIP_M"
+                "97": "PIP_M",
             }
-            benefit_names = list(map(lambda benefit : benefit + "_reported", benefit_codes.values()))
+            benefit_names = list(
+                map(
+                    lambda benefit: benefit + "_reported",
+                    benefit_codes.values(),
+                )
+            )
             contr = "JSA_contributory"
             inc = "JSA_income"
             comb = "JSA_combined"
-            JSA_names = list(map(lambda x : x + "_reported", [contr, inc, comb]))
+            JSA_names = list(
+                map(lambda x: x + "_reported", [contr, inc, comb])
+            )
             JSA_types = {
                 "1": contr,
                 "2": inc,
                 "3": contr,
                 "4": inc,
                 "5": comb,
-                "6": comb
+                "6": comb,
             }
-            writer = csv.DictWriter(g, fieldnames=fieldnames + benefit_names + JSA_names)
+            writer = csv.DictWriter(
+                g, fieldnames=fieldnames + benefit_names + JSA_names
+            )
             writer.writeheader()
             for line in tqdm(
                 reader, desc="Writing benunits into benunit file", total=22406
@@ -259,7 +270,9 @@ def write_benunit_file(data_dir, output_dir, weights=None):
                             benefit_codes[code] + "_reported"
                         ] = safe(line["BENAMT"])
                     elif code == "14":
-                        benunit_data[benunit_id][JSA_types[line["VAR2"]] + "_reported"] = safe(line["BENAMT"])
+                        benunit_data[benunit_id][
+                            JSA_types[line["VAR2"]] + "_reported"
+                        ] = safe(line["BENAMT"])
                 except:
                     skipped += 1
             print(f"Benefits: skipped {skipped} rows.")
@@ -284,7 +297,12 @@ def write_household_file(data_dir, output_dir, weights=None):
             reader = csv.DictReader(
                 f, fieldnames=next(f).split("\t"), delimiter="\t"
             )
-            fieldnames = ["household_id", "household_weight", "housing_cost", "council_tax"]
+            fieldnames = [
+                "household_id",
+                "household_weight",
+                "housing_cost",
+                "council_tax",
+            ]
             writer = csv.DictWriter(g, fieldnames=fieldnames)
             writer.writeheader()
             skipped = 0
@@ -299,7 +317,7 @@ def write_household_file(data_dir, output_dir, weights=None):
                         "household_id": line["sernum"],
                         "household_weight": line["GROSS4"],
                         "housing_cost": safe(line["GBHSCOST"]),
-                        "council_tax": safe(line["CTANNUAL"]) / 52
+                        "council_tax": safe(line["CTANNUAL"]) / 52,
                     }
                     for key in household.keys():
                         if key not in string_keys:

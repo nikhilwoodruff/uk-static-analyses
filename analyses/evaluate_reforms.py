@@ -7,6 +7,9 @@ import numpy as np
 from rdbl import gbp, num
 from matplotlib import pyplot as plt
 import os
+from argparse import ArgumentParser
+import microdf as mdf
+import pandas as pd
 
 
 def percent_reduction(before, after):
@@ -14,6 +17,16 @@ def percent_reduction(before, after):
 
 
 def poverty_rate(sim, cross_section_var, mode="ahc", period="2020-09-10"):
+    x = np.sum(
+        sim.calculate("in_poverty_" + mode, period)
+        * sim.calculate(cross_section_var, period)
+        * sim.calculate("household_weight", period)
+    )
+    y = np.sum(
+        sim.calculate(cross_section_var, period)
+        * sim.calculate("household_weight", period)
+    )
+    z = sim.calculate("adults_in_household", period)
     return np.sum(
         sim.calculate("in_poverty_" + mode, period)
         * sim.calculate(cross_section_var, period)
@@ -44,12 +57,19 @@ def evaluate_reform(reform):
         poverty_rate(baseline, "people_in_household"),
         poverty_rate(reformed, "people_in_household"),
     )
+    adult_poverty_ahc_reduction = percent_reduction(
+        poverty_rate(baseline, "adults_in_household"),
+        poverty_rate(reformed, "adults_in_household"),
+    )
     child_poverty_ahc_reduction = percent_reduction(
         poverty_rate(baseline, "children_in_household"),
         poverty_rate(reformed, "children_in_household"),
     )
     print("Poverty statistics:")
     print(f"    AHC poverty change: {num(poverty_ahc_reduction * 100)}%")
+    print(
+        f"    AHC adult poverty change: {num(adult_poverty_ahc_reduction * 100)}%"
+    )
     print(
         f"    AHC child poverty change: {num(child_poverty_ahc_reduction * 100)}%"
     )
@@ -61,6 +81,22 @@ def evaluate_reform(reform):
         "child_tax_credit",
         "income_support",
     ]
+
+    print("Inequality:")
+    household_net_ahc = pd.DataFrame()
+    household_net_ahc["w"] = baseline.calculate(
+        "household_weight", period
+    ) * baseline.calculate("people_in_household", period)
+    household_net_ahc["baseline"] = baseline.calculate(
+        "equiv_household_net_income_ahc", period
+    )
+    household_net_ahc["reform"] = reformed.calculate(
+        "equiv_household_net_income_ahc", period
+    )
+    baseline_gini = mdf.gini(household_net_ahc, "baseline")
+    reform_gini = mdf.gini(household_net_ahc, "reform")
+    gini_reduction = percent_reduction(baseline_gini, reform_gini)
+    print(f"    Gini coefficient reduction: {num(gini_reduction * 100)}%")
 
     print("Rise in amounts per year across all:")
     print("    individuals:")
@@ -79,8 +115,21 @@ def evaluate_reform(reform):
         print(f"        {var}: {gbp(diff)}")
 
 
-i = 1
-for reform in [reform_1, reform_2, reform_3, reform_4]:
-    print(f"---SIMULATION {i}---")
-    i += 1
-    evaluate_reform(reform)
+if __name__ == "__main__":
+    parser = ArgumentParser(
+        description="Tool to evaluate key figures from each reform simulation"
+    )
+    parser.add_argument(
+        "--reform", help="The name of a specific reform to evaluate"
+    )
+    args = parser.parse_args()
+    reform_list = [reform_1, reform_2, reform_3, reform_4]
+    reform_names = {"1": reform_1, "2": reform_2, "3": reform_3, "4": reform_4}
+    if args.reform is not None:
+        evaluate_reform(reform_names[args.reform])
+    else:
+        i = 1
+        for reform in reform_list:
+            print(f"---SIMULATION {i}---")
+            i += 1
+            evaluate_reform(reform)

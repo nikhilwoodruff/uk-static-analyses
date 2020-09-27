@@ -31,9 +31,15 @@ def model(*reforms, data_dir="inputs", period="2020-01"):
     )  # create the entities (person, benunit, etc.)
     if data_dir is None:
         data_dir = "inputs"
-    person_file = pd.read_csv(os.path.join(data_dir, "person.csv"))
-    benunit_file = pd.read_csv(os.path.join(data_dir, "benunit.csv"))
-    household_file = pd.read_csv(os.path.join(data_dir, "household.csv"))
+    person_file = pd.read_csv(
+        os.path.join(data_dir, "person.csv"), low_memory=False
+    )
+    benunit_file = pd.read_csv(
+        os.path.join(data_dir, "benunit.csv"), low_memory=False
+    )
+    household_file = pd.read_csv(
+        os.path.join(data_dir, "household.csv"), low_memory=False
+    )
     person_ids = np.array(person_file["person_id"])
     benunit_ids = np.array(benunit_file["benunit_id"])
     household_ids = np.array(household_file["household_id"])
