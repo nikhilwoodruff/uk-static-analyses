@@ -40,7 +40,7 @@ def poverty_rate(sim, cross_section_var, mode="ahc", period="2020-09-10"):
 def evaluate_reform(reform):
     baseline = model()
     reformed = model(reform)
-    period = "2020-09-10"
+    period = "2020-10"
     family_weights = baseline.calculate("benunit_weight", period)
     adult_weights = baseline.calculate("adult_weight", period)
     net_gain = reformed.calculate(
@@ -65,6 +65,10 @@ def evaluate_reform(reform):
         poverty_rate(baseline, "children_in_household"),
         poverty_rate(reformed, "children_in_household"),
     )
+    senior_poverty_ahc_reduction = percent_reduction(
+        poverty_rate(baseline, "seniors_in_household"),
+        poverty_rate(reformed, "seniors_in_household"),
+    )
     print("Poverty statistics:")
     print(f"    AHC poverty change: {num(poverty_ahc_reduction * 100)}%")
     print(
@@ -73,13 +77,22 @@ def evaluate_reform(reform):
     print(
         f"    AHC child poverty change: {num(child_poverty_ahc_reduction * 100)}%"
     )
-    diff_vars_adult = ["income_tax", "NI", "pension_income"]
-
+    print(
+        f"    AHC senior poverty change: {num(senior_poverty_ahc_reduction * 100)}%"
+    )
+    diff_vars_adult = [
+        "income_tax",
+        "NI",
+        "state_pension",
+        "capital_gains_tax",
+    ]
     diff_vars_family = [
         "child_benefit",
+        "income_support",
         "working_tax_credit",
         "child_tax_credit",
-        "income_support",
+        "benunit_income_tax",
+        "benunit_NI",
     ]
 
     print("Inequality:")
@@ -93,8 +106,8 @@ def evaluate_reform(reform):
     household_net_ahc["reform"] = reformed.calculate(
         "equiv_household_net_income_ahc", period
     )
-    baseline_gini = mdf.gini(household_net_ahc, "baseline")
-    reform_gini = mdf.gini(household_net_ahc, "reform")
+    baseline_gini = mdf.gini(household_net_ahc, "baseline", w="w")
+    reform_gini = mdf.gini(household_net_ahc, "reform", w="w")
     gini_reduction = percent_reduction(baseline_gini, reform_gini)
     print(f"    Gini coefficient reduction: {num(gini_reduction * 100)}%")
 
