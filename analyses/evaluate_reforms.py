@@ -1,4 +1,4 @@
-from utilities.simulation import model, entity_df
+from openfisca_uk.tools.simulation import model, entity_df
 from openfisca_uk.reforms.basic_income.reform_1 import reform_1
 from openfisca_uk.reforms.basic_income.reform_2 import reform_2
 from openfisca_uk.reforms.basic_income.reform_3 import reform_3
@@ -81,10 +81,7 @@ def evaluate_reform(reform):
         f"    AHC senior poverty change: {num(senior_poverty_ahc_reduction * 100)}%"
     )
     diff_vars_adult = [
-        "income_tax",
-        "NI",
         "state_pension",
-        "capital_gains_tax",
     ]
     diff_vars_family = [
         "child_benefit",
