@@ -1,16 +1,16 @@
 from openfisca_uk.tools.simulation import model, entity_df
-from openfisca_uk.reforms.basic_income.reform_3 import reform_3
+from openfisca_uk.reforms.basic_income.reform_4 import reform_4
 import numpy as np
 import pandas as pd
 from plotly import express as px
 
 baseline = model()
 period = "2020-10-15"
-reform = model(reform_3)
+reform = model(reform_4)
 
 df = pd.DataFrame()
-df["earned_income"] = (
-    baseline.calculate("household_earned_income", period) * 52
+df["household_income"] = (
+    baseline.calculate("household_income", period) * 52
 )
 df["baseline_net_income"] = (
     baseline.calculate("household_net_income_bhc", period) * 52
@@ -31,7 +31,7 @@ hover_cols = [
 
 px.scatter(
     data_frame=df,
-    x="earned_income",
+    x="household_income",
     y="net_gain",
     hover_data=hover_cols,
     size="weight",
