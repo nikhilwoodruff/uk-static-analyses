@@ -1,4 +1,4 @@
-from utilities.simulation import model, entity_df
+from openfisca_uk.tools.simulation import model, entity_df
 from openfisca_uk.reforms.basic_income.reform_1 import reform_1
 from plotly import express as px
 import numpy as np
@@ -25,9 +25,6 @@ def mean(var, weight):
 def median(var, weight):
     return np.median(np.repeat(var, weight.astype(np.int32)))
 
-
-x = calc("benefit_modelling")
-
 df = entity_df(sim, entity="household")
 df_p = entity_df(sim, entity="person")
 df_p["size"] = df_p["adult_weight"] / 10000
@@ -51,6 +48,10 @@ show_columns = [
 # px.scatter(data_frame=df_p, x="net_income", y="actual_net_income", hover_data=show_columns, size="size").show()
 # px.histogram(df_p["net_income"] - df_p["actual_net_income"], nbins=1000).show()
 median_household_income_bhc = median(
+    calc("equiv_household_net_income_bhc"),
+    calc("household_weight") * calc("people_in_household"),
+)
+median_household_income_ahc = median(
     calc("equiv_household_net_income_ahc"),
     calc("household_weight") * calc("people_in_household"),
 )
@@ -71,6 +72,7 @@ child_poverty_ahc = mean(
     calc("household_weight") * calc("children_in_household"),
 )
 print(f"Median household income BHC: {median_household_income_bhc}")
+print(f"Median household income AHC: {median_household_income_ahc}")
 print(f"Individual poverty BHC: {poverty_bhc:02}, AHC: {poverty_ahc:02}")
 print(
     f"Child poverty BHC: {child_poverty_bhc:02}, AHC: {child_poverty_ahc:02}"

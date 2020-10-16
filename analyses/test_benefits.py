@@ -35,20 +35,42 @@ def print_errors(var1, var2, weight):
         f"Total reported spending per year: {gbp(np.sum(var1 * weight) * 52)}, total simulated spending per year: {gbp(np.sum(var2 * weight) * 52)}"
     )
 
-
+a = calc("adult_weight")
 h = calc("household_weight")
 b = calc("benunit_weight")
 
-# WTC+CTC
+print("Winter Fuel Allowance:")
 
-print("Tax credits")
-txcred = calc("working_tax_credit") + calc("child_tax_credit")
-txcred_reported = calc("benunit_wtc_reported") + calc("benunit_ctc_reported")
-print_errors(txcred_reported, txcred, b)
+reported = calc("household_WFA_reported")
+simulated = calc("winter_fuel_allowance")
+print_errors(reported, simulated, h)
 
-# Child Benefit
+print("JSA (contribution-based):")
 
-print("Child Benefit")
-CB = calc("child_benefit")
-CB_reported = calc("benunit_CB_reported")
-print_errors(CB_reported, CB, b)
+reported = calc("JSA_contrib_reported")
+simulated = calc("JSA_contrib")
+print_errors(reported, simulated, a)
+
+print("JSA (income-based):")
+
+reported = calc("benunit_JSA_income_reported")
+simulated = calc("JSA_income")
+print_errors(reported, simulated, b)
+
+print("Income Support:")
+
+reported = calc("benunit_IS_reported")
+simulated = calc("income_support")
+print_errors(reported, simulated, b)
+
+print("Working Tax Credit:")
+
+reported = calc("benunit_WTC_reported")
+simulated = calc("working_tax_credit")
+print_errors(reported, simulated, b)
+
+print("Child Tax Credit:")
+
+reported = calc("benunit_CTC_reported")
+simulated = calc("child_tax_credit")
+print_errors(reported, simulated, b)
