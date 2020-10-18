@@ -26,7 +26,7 @@ hover_cols = [
     "baseline_net_income",
     "reform_net_income",
     "reform_net_income",
-    "net_gain",
+    "net_gain"
 ]
 
 px.scatter(
