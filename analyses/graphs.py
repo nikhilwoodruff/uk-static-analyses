@@ -9,9 +9,7 @@ period = "2020-10-15"
 reform = model(reform_4)
 
 df = pd.DataFrame()
-df["household_income"] = (
-    baseline.calculate("household_income", period) * 52
-)
+df["household_income"] = baseline.calculate("household_income", period) * 52
 df["baseline_net_income"] = (
     baseline.calculate("household_net_income_bhc", period) * 52
 )
@@ -26,7 +24,7 @@ hover_cols = [
     "baseline_net_income",
     "reform_net_income",
     "reform_net_income",
-    "net_gain"
+    "net_gain",
 ]
 
 px.scatter(

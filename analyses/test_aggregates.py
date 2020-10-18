@@ -22,15 +22,12 @@ def median(var, weight):
 def total(var, weight="adult"):
     return np.sum(calc(var) * calc(weight + "_weight")) * 52
 
+
 a = calc("adult_weight")
 h = calc("household_weight")
 b = calc("benunit_weight")
 
-person_vars = [
-    "JSA_contrib",
-    "income_tax",
-    "state_pension"
-]
+person_vars = ["JSA_contrib", "income_tax", "state_pension"]
 benunit_vars = [
     "JSA_income",
     "income_support",
@@ -39,11 +36,15 @@ benunit_vars = [
     "child_tax_credit",
     "housing_benefit",
     "child_benefit",
-    "universal_credit"
+    "universal_credit",
 ]
 
 for var in person_vars:
-    print(f"{var}:\n  total expenditure: {gbp(total(var))}\n  total recipients: {num(np.sum((calc(var) > 0) * a))}")
+    print(
+        f"{var}:\n  total expenditure: {gbp(total(var))}\n  total recipients: {num(np.sum((calc(var) > 0) * a))}"
+    )
 
 for var in benunit_vars:
-    print(f"{var}:\n  total expenditure: {gbp(total(var, weight='benunit'))}\n  total recipients: {num(np.sum((calc(var) > 0) * b))}")
+    print(
+        f"{var}:\n  total expenditure: {gbp(total(var, weight='benunit'))}\n  total recipients: {num(np.sum((calc(var) > 0) * b))}"
+    )

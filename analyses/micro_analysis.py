@@ -7,23 +7,15 @@ TEST_CASE = {
         "pensioner1": {
             "pension_income": {"ETERNITY": 200},
             "state_pension": {"ETERNITY": 175},
-            "pension_credit_reported": {"ETERNITY": 1}
-        }, 
+            "pension_credit_reported": {"ETERNITY": 1},
+        },
         "pensioner2": {
             "pension_income": {"ETERNITY": 150},
-            "state_pension": {"ETERNITY": 175}
-        }
+            "state_pension": {"ETERNITY": 175},
+        },
     },
-    "benunits": {
-        "b1": {
-            "adults": ["pensioner1", "pensioner2"]
-        }
-    },
-    "households": {
-        "h1": {
-            "adults": ["pensioner1", "pensioner2"]
-        }
-    },
+    "benunits": {"b1": {"adults": ["pensioner1", "pensioner2"]}},
+    "households": {"h1": {"adults": ["pensioner1", "pensioner2"]}},
 }
 
 system = CountryTaxBenefitSystem()
@@ -45,7 +37,7 @@ variables = [
     "child_benefit",
     "pension_credit_MG",
     "pension_credit_SC",
-    "pension_credit_GC"
+    "pension_credit_GC",
 ]
 
 for model, name in zip([baseline, reform], ["baseline", "reform"]):

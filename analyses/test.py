@@ -25,6 +25,7 @@ def mean(var, weight):
 def median(var, weight):
     return np.median(np.repeat(var, weight.astype(np.int32)))
 
+
 df = entity_df(sim, entity="household")
 df_p = entity_df(sim, entity="person")
 df_p["size"] = df_p["adult_weight"] / 10000

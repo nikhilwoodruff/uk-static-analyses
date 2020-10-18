@@ -81,10 +81,7 @@ def evaluate_reform(reform):
     print(
         f"    AHC senior poverty change: {num(senior_poverty_ahc_reduction * 100)}%"
     )
-    diff_vars_adult = [
-        "state_pension",
-        "JSA_contrib"
-    ]
+    diff_vars_adult = ["state_pension", "JSA_contrib"]
     diff_vars_family = [
         "child_benefit",
         "income_support",
@@ -94,7 +91,7 @@ def evaluate_reform(reform):
         "benunit_NI",
         "pension_credit",
         "JSA_income",
-        "universal_credit"
+        "universal_credit",
     ]
     print("MTR:")
     baseline_MTR = calc_mtr(entity="household")
@@ -102,12 +99,20 @@ def evaluate_reform(reform):
     average_baseline_MTR = np.average(baseline_MTR, weights=household_weights)
     average_reform_MTR = np.average(reform_MTR, weights=household_weights)
     poor = baseline.calculate("household_net_income_ahc", period) < 250
-    average_baseline_poor_MTR = np.average(baseline_MTR[poor], weights=household_weights[poor])
-    average_reform_poor_MTR = np.average(reform_MTR[poor], weights=household_weights[poor])
+    average_baseline_poor_MTR = np.average(
+        baseline_MTR[poor], weights=household_weights[poor]
+    )
+    average_reform_poor_MTR = np.average(
+        reform_MTR[poor], weights=household_weights[poor]
+    )
     print(f"    Average baseline MTR: {average_baseline_MTR}")
     print(f"    Average reform MTR: {average_reform_MTR}")
-    print(f"    Average baseline MTR for low-income households: {average_baseline_poor_MTR}")
-    print(f"    Average reform MTR for low-income households: {average_reform_poor_MTR}")
+    print(
+        f"    Average baseline MTR for low-income households: {average_baseline_poor_MTR}"
+    )
+    print(
+        f"    Average reform MTR for low-income households: {average_reform_poor_MTR}"
+    )
     print("Inequality:")
     household_net_ahc = pd.DataFrame()
     household_net_ahc["w"] = baseline.calculate(
