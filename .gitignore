@@ -3,3 +3,4 @@ datasets/frs
 **/__pycache__
 inputs/
 csv_generation/UKDA-8633-tab/
+analyses\household_results.csv

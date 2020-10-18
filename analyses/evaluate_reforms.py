@@ -1,4 +1,4 @@
-from openfisca_uk.tools.simulation import model, entity_df
+from openfisca_uk.tools.simulation import model, entity_df, calc_mtr
 from openfisca_uk.reforms.basic_income.reform_1 import reform_1
 from openfisca_uk.reforms.basic_income.reform_2 import reform_2
 from openfisca_uk.reforms.basic_income.reform_3 import reform_3
@@ -43,6 +43,7 @@ def evaluate_reform(reform):
     period = "2020-10"
     family_weights = baseline.calculate("benunit_weight", period)
     adult_weights = baseline.calculate("adult_weight", period)
+    household_weights = baseline.calculate("household_weight", period)
     net_gain = reformed.calculate(
         "benunit_net_income", period
     ) - baseline.calculate("benunit_net_income", period)
@@ -82,6 +83,7 @@ def evaluate_reform(reform):
     )
     diff_vars_adult = [
         "state_pension",
+        "JSA_contrib"
     ]
     diff_vars_family = [
         "child_benefit",
@@ -90,8 +92,22 @@ def evaluate_reform(reform):
         "child_tax_credit",
         "benunit_income_tax",
         "benunit_NI",
+        "pension_credit",
+        "JSA_income",
+        "universal_credit"
     ]
-
+    print("MTR:")
+    baseline_MTR = calc_mtr(entity="household")
+    reform_MTR = calc_mtr(reform, entity="household")
+    average_baseline_MTR = np.average(baseline_MTR, weights=household_weights)
+    average_reform_MTR = np.average(reform_MTR, weights=household_weights)
+    poor = baseline.calculate("household_net_income_ahc", period) < 250
+    average_baseline_poor_MTR = np.average(baseline_MTR[poor], weights=household_weights[poor])
+    average_reform_poor_MTR = np.average(reform_MTR[poor], weights=household_weights[poor])
+    print(f"    Average baseline MTR: {average_baseline_MTR}")
+    print(f"    Average reform MTR: {average_reform_MTR}")
+    print(f"    Average baseline MTR for low-income households: {average_baseline_poor_MTR}")
+    print(f"    Average reform MTR for low-income households: {average_reform_poor_MTR}")
     print("Inequality:")
     household_net_ahc = pd.DataFrame()
     household_net_ahc["w"] = baseline.calculate(
