@@ -93,7 +93,7 @@ def evaluate_reform(reform):
         "JSA_income",
         "universal_credit",
     ]
-    '''
+    """
     print("MTR:")
     baseline_MTR = calc_mtr(entity="household")
     reform_MTR = calc_mtr(reform, entity="household")
@@ -114,7 +114,7 @@ def evaluate_reform(reform):
     print(
         f"    Average reform MTR for households on benefits: {average_reform_ben_MTR}"
     )
-    '''
+    """
     print("Inequality:")
     household_net_ahc = pd.DataFrame()
     household_net_ahc["w"] = baseline.calculate(
