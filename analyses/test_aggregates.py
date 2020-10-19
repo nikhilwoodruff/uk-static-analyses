@@ -34,6 +34,7 @@ benunit_vars = [
     "pension_credit",
     "working_tax_credit",
     "child_tax_credit",
+    "WTC_CTC_combined",
     "housing_benefit",
     "child_benefit",
     "universal_credit",

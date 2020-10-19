@@ -1,4 +1,4 @@
-from openfisca_uk.tools.simulation import model, entity_df
+from openfisca_uk.tools.simulation import model, entity_df, calc_mtr
 from openfisca_uk.reforms.basic_income.reform_1 import reform_1
 from openfisca_uk.reforms.basic_income.reform_2 import reform_2
 from openfisca_uk.reforms.basic_income.reform_3 import reform_3
@@ -12,12 +12,11 @@ for reform in [reform_1]:
     x = entity_df(model(), entity="benunit")
     y = entity_df(model(small_earnings_increase), entity="benunit")
     x["inc"] = x["benunit_income"]
-    x["MTR"] = (
-        1
-        - (y["benunit_net_income"] - x["benunit_net_income"])
-        / y["benunit_taxed_means_tested_bonus"]
-    )
+    x["MTR"] = calc_mtr()
     cols = [
+        "benunit_pension_credit_reported",
+        "pension_credit_GC",
+        "pension_credit_SC",
         "benunit_housing_costs",
         "benunit_housing_benefit_reported",
         "benunit_post_tax_income",
