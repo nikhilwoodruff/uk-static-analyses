@@ -93,26 +93,28 @@ def evaluate_reform(reform):
         "JSA_income",
         "universal_credit",
     ]
+    '''
     print("MTR:")
     baseline_MTR = calc_mtr(entity="household")
     reform_MTR = calc_mtr(reform, entity="household")
     average_baseline_MTR = np.average(baseline_MTR, weights=household_weights)
     average_reform_MTR = np.average(reform_MTR, weights=household_weights)
-    poor = baseline.calculate("household_net_income_ahc", period) < 250
-    average_baseline_poor_MTR = np.average(
-        baseline_MTR[poor], weights=household_weights[poor]
+    on_benefits = baseline.calculate("on_benefits", period) > 0
+    average_baseline_ben_MTR = np.average(
+        baseline_MTR[on_benefits], weights=household_weights[on_benefits]
     )
-    average_reform_poor_MTR = np.average(
-        reform_MTR[poor], weights=household_weights[poor]
+    average_reform_ben_MTR = np.average(
+        reform_MTR[on_benefits], weights=household_weights[on_benefits]
     )
     print(f"    Average baseline MTR: {average_baseline_MTR}")
     print(f"    Average reform MTR: {average_reform_MTR}")
     print(
-        f"    Average baseline MTR for low-income households: {average_baseline_poor_MTR}"
+        f"    Average baseline MTR for households on benefits: {average_baseline_ben_MTR}"
     )
     print(
-        f"    Average reform MTR for low-income households: {average_reform_poor_MTR}"
+        f"    Average reform MTR for households on benefits: {average_reform_ben_MTR}"
     )
+    '''
     print("Inequality:")
     household_net_ahc = pd.DataFrame()
     household_net_ahc["w"] = baseline.calculate(
