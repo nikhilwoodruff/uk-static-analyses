@@ -17,16 +17,6 @@ def percent_reduction(before, after):
 
 
 def poverty_rate(sim, cross_section_var, mode="ahc", period="2020-09-10"):
-    x = np.sum(
-        sim.calculate("in_poverty_" + mode, period)
-        * sim.calculate(cross_section_var, period)
-        * sim.calculate("household_weight", period)
-    )
-    y = np.sum(
-        sim.calculate(cross_section_var, period)
-        * sim.calculate("household_weight", period)
-    )
-    z = sim.calculate("adults_in_household", period)
     return np.sum(
         sim.calculate("in_poverty_" + mode, period)
         * sim.calculate(cross_section_var, period)
@@ -93,13 +83,12 @@ def evaluate_reform(reform):
         "JSA_income",
         "universal_credit",
     ]
-    """
     print("MTR:")
     baseline_MTR = calc_mtr(entity="household")
     reform_MTR = calc_mtr(reform, entity="household")
     average_baseline_MTR = np.average(baseline_MTR, weights=household_weights)
     average_reform_MTR = np.average(reform_MTR, weights=household_weights)
-    on_benefits = baseline.calculate("on_benefits", period) > 0
+    on_benefits = baseline.calculate("household_receives_means_tested_benefits", period).astype(bool)
     average_baseline_ben_MTR = np.average(
         baseline_MTR[on_benefits], weights=household_weights[on_benefits]
     )
@@ -114,7 +103,6 @@ def evaluate_reform(reform):
     print(
         f"    Average reform MTR for households on benefits: {average_reform_ben_MTR}"
     )
-    """
     print("Inequality:")
     household_net_ahc = pd.DataFrame()
     household_net_ahc["w"] = baseline.calculate(

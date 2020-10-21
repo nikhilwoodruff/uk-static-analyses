@@ -8,12 +8,9 @@ from plotly import express as px
 import pandas as pd
 import numpy as np
 
-for reform in [reform_1]:
-    x = entity_df(model(), entity="benunit")
-    y = entity_df(model(small_earnings_increase), entity="benunit")
-    x["inc"] = x["benunit_income"]
-    x["MTR"] = calc_mtr()
+for reform in ["baseline"]:
     cols = [
+        "benunit_benefit_modelling",
         "benunit_pension_credit_reported",
         "pension_credit_GC",
         "pension_credit_SC",
@@ -26,6 +23,7 @@ for reform in [reform_1]:
         "benunit_income_tax",
         "benunit_NI",
         "working_tax_credit",
+        "child_benefit",
         "child_tax_credit",
         "universal_credit",
         "housing_benefit",
@@ -39,6 +37,15 @@ for reform in [reform_1]:
         "benunit_misc",
         "benunit_interest",
     ]
+    if reform == "baseline":
+        x = entity_df(model(), entity="benunit")
+        x["inc"] = x["benunit_income"]
+        x["MTR"] = calc_mtr()
+    else:
+        x = entity_df(model(reform), entity="benunit")
+        x["inc"] = x["benunit_income"] - x["benunit_basic_income"]
+        x["MTR"] = calc_mtr(reform)
+        cols += ["benunit_basic_income"]
     x["ETR"] = np.clip(
         np.where(
             x["benunit_income"] > 0,
@@ -55,5 +62,6 @@ for reform in [reform_1]:
         > 0
     )
     px.scatter(
-        data_frame=x, x="inc", y="MTR", hover_data=cols, color="ETR"
+        data_frame=x, x="inc", y="MTR", hover_data=cols, color="ETR", opacity=0.1
     ).show()
+    px.histogram(x["MTR"]).show()
