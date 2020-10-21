@@ -30,10 +30,10 @@ for var in components:
     )
     fig.add_trace(
         go.Scatter(
-            x=benunits["benunit_income"][benunits[var] > 0], 
-            y=benunits[var][benunits[var] > 0], 
-            mode="markers", 
-            marker=dict(opacity=0.1)
+            x=benunits["benunit_income"][benunits[var] > 0],
+            y=benunits[var][benunits[var] > 0],
+            mode="markers",
+            marker=dict(opacity=0.1),
         ),
         row=1,
         col=1,
@@ -43,7 +43,7 @@ for var in components:
             x=benunits["benunit_income"][benunits[var] > 0],
             y=benunits["d_" + var][benunits[var] > 0],
             mode="markers",
-            marker=dict(opacity=0.2)
+            marker=dict(opacity=0.2),
         ),
         row=1,
         col=2,

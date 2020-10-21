@@ -34,7 +34,9 @@ px.scatter(
     hover_data=hover_cols,
     size="weight",
     color="num_children",
-    opacity=0.1
+    opacity=0.1,
 ).show()
 px.histogram(df["net_gain"]).show()
-px.histogram(np.clip(baseline.calculate("household_net_income_ahc", period), 0, 1200)).show()
+px.histogram(
+    np.clip(baseline.calculate("household_net_income_ahc", period), 0, 1200)
+).show()

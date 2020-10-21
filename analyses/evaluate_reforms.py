@@ -88,7 +88,9 @@ def evaluate_reform(reform):
     reform_MTR = calc_mtr(reform, entity="household")
     average_baseline_MTR = np.average(baseline_MTR, weights=household_weights)
     average_reform_MTR = np.average(reform_MTR, weights=household_weights)
-    on_benefits = baseline.calculate("household_receives_means_tested_benefits", period).astype(bool)
+    on_benefits = baseline.calculate(
+        "household_receives_means_tested_benefits", period
+    ).astype(bool)
     average_baseline_ben_MTR = np.average(
         baseline_MTR[on_benefits], weights=household_weights[on_benefits]
     )

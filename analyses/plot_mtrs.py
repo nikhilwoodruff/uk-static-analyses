@@ -62,6 +62,11 @@ for reform in ["baseline"]:
         > 0
     )
     px.scatter(
-        data_frame=x, x="inc", y="MTR", hover_data=cols, color="ETR", opacity=0.1
+        data_frame=x,
+        x="inc",
+        y="MTR",
+        hover_data=cols,
+        color="ETR",
+        opacity=0.1,
     ).show()
     px.histogram(x["MTR"]).show()
