@@ -1,4 +1,4 @@
-from openfisca_uk.tools.simulation import model, entity_df
+from openfisca_uk.tools.simulation import model, entity_df, calc_mtr
 from openfisca_uk.reforms.basic_income.reform_1 import reform_1
 from openfisca_uk.reforms.basic_income.reform_2 import reform_2
 from openfisca_uk.reforms.basic_income.reform_3 import reform_3
@@ -17,16 +17,6 @@ def percent_reduction(before, after):
 
 
 def poverty_rate(sim, cross_section_var, mode="ahc", period="2020-09-10"):
-    x = np.sum(
-        sim.calculate("in_poverty_" + mode, period)
-        * sim.calculate(cross_section_var, period)
-        * sim.calculate("household_weight", period)
-    )
-    y = np.sum(
-        sim.calculate(cross_section_var, period)
-        * sim.calculate("household_weight", period)
-    )
-    z = sim.calculate("adults_in_household", period)
     return np.sum(
         sim.calculate("in_poverty_" + mode, period)
         * sim.calculate(cross_section_var, period)
@@ -43,6 +33,7 @@ def evaluate_reform(reform):
     period = "2020-10"
     family_weights = baseline.calculate("benunit_weight", period)
     adult_weights = baseline.calculate("adult_weight", period)
+    household_weights = baseline.calculate("household_weight", period)
     net_gain = reformed.calculate(
         "benunit_net_income", period
     ) - baseline.calculate("benunit_net_income", period)
@@ -80,9 +71,7 @@ def evaluate_reform(reform):
     print(
         f"    AHC senior poverty change: {num(senior_poverty_ahc_reduction * 100)}%"
     )
-    diff_vars_adult = [
-        "state_pension",
-    ]
+    diff_vars_adult = ["state_pension", "JSA_contrib"]
     diff_vars_family = [
         "child_benefit",
         "income_support",
@@ -90,8 +79,32 @@ def evaluate_reform(reform):
         "child_tax_credit",
         "benunit_income_tax",
         "benunit_NI",
+        "pension_credit",
+        "JSA_income",
+        "universal_credit",
     ]
-
+    print("MTR:")
+    baseline_MTR = calc_mtr(entity="household")
+    reform_MTR = calc_mtr(reform, entity="household")
+    average_baseline_MTR = np.average(baseline_MTR, weights=household_weights)
+    average_reform_MTR = np.average(reform_MTR, weights=household_weights)
+    on_benefits = baseline.calculate(
+        "household_receives_means_tested_benefits", period
+    ).astype(bool)
+    average_baseline_ben_MTR = np.average(
+        baseline_MTR[on_benefits], weights=household_weights[on_benefits]
+    )
+    average_reform_ben_MTR = np.average(
+        reform_MTR[on_benefits], weights=household_weights[on_benefits]
+    )
+    print(f"    Average baseline MTR: {average_baseline_MTR}")
+    print(f"    Average reform MTR: {average_reform_MTR}")
+    print(
+        f"    Average baseline MTR for households on benefits: {average_baseline_ben_MTR}"
+    )
+    print(
+        f"    Average reform MTR for households on benefits: {average_reform_ben_MTR}"
+    )
     print("Inequality:")
     household_net_ahc = pd.DataFrame()
     household_net_ahc["w"] = baseline.calculate(

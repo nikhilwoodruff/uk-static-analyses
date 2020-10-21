@@ -1,4 +1,4 @@
-from utilities.simulation import model
+from openfisca_uk.tools.simulation import model
 from openfisca_uk.reforms.basic_income.reform_1 import reform_1
 from openfisca_uk.reforms.basic_income.reform_2 import reform_2
 from openfisca_uk.reforms.basic_income.reform_3 import reform_3
